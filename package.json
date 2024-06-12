@@ -1,0 +1,63 @@
+{
+  "name": "material-kit-react",
+  "version": "3.0.0",
+  "author": "Devias",
+  "licence": "MIT",
+  "homepage": "https://devias.io",
+  "private": false,
+  "scripts": {
+    "dev": "next -p 5001",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint",
+    "lint-fix": "next lint --fix",
+    "prepare": "husky install",
+    "lint:write": "next lint --cache --fix"
+  },
+  "dependencies": {
+    "@emotion/cache": "11.10.5",
+    "@emotion/react": "^11.10.6",
+    "@emotion/server": "11.10.0",
+    "@emotion/styled": "^11.10.6",
+    "@heroicons/react": "2.0.16",
+    "@mui/lab": "5.0.0-alpha.120",
+    "@mui/material": "^5.15.18",
+    "@mui/system": "^5.15.12",
+    "@mui/x-date-pickers": "5.0.19",
+    "apexcharts": "3.37.0",
+    "axios": "^1.5.0",
+    "date-fns": "2.29.3",
+    "formik": "2.2.9",
+    "js-sha256": "^0.10.1",
+    "next": "^13.5.4",
+    "nprogress": "0.2.0",
+    "prop-types": "15.8.1",
+    "quill": "^2.0.2",
+    "react": "18.2.0",
+    "react-apexcharts": "1.4.0",
+    "react-dom": "18.2.0",
+    "react-froala-wysiwyg": "^4.2.0",
+    "react-quill": "^2.0.0",
+    "sha1": "^1.1.1",
+    "simplebar-react": "^3.2.1",
+    "xlsx-populate": "^1.21.0",
+    "yup": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.13.0",
+    "@types/nprogress": "0.2.0",
+    "@types/numeral": "2.0.2",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "eslint": "8.34.0",
+    "eslint-config-next": "13.1.6",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.0.7",
+    "lint-staged": "^15.2.0",
+    "prettier": "3.2.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
+  }
+}
