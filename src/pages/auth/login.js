@@ -15,7 +15,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useAuth } from 'src/hooks/use-auth';
-import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 
 const Page = () => {
   const router = useRouter();
@@ -31,10 +30,10 @@ const Page = () => {
     },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email('Must be a valid email')
+        .email('Debe ser un email válido')
         .max(255)
-        .required('Email is required'),
-      password: Yup.string().max(255).required('Password is required'),
+        .required('El email es requerido'),
+      password: Yup.string().max(255).required('La contraseña es requerida'),
     }),
     onSubmit: async (values, helpers) => {
       try {
@@ -44,7 +43,7 @@ const Page = () => {
       } catch (err) {
         helpers.setStatus({ success: false });
         helpers.setErrors({
-          submit: 'Error de acceso usario y contraseña no válida',
+          submit: 'Error de acceso, usuario y/o contraseña no válidos',
         });
       } finally {
         setIsSubmitting(false); // Establecer isLoading a false después de cargar los datos (éxito o fallo)
@@ -130,12 +129,19 @@ const Page = () => {
                   disabled={isSubmitting}
                   startIcon={isSubmitting && <CircularProgress size={24} />}
                 >
-                  {isSubmitting ? 'Loading...' : 'Entrar'}
+                  {isSubmitting ? 'Cargando...' : 'Entrar'}
                 </Button>
-
-                <Alert color="primary" severity="info" sx={{ mt: 3 }}></Alert>
               </form>
             )}
+            <Button
+              fullWidth
+              size="large"
+              sx={{ mt: 3 }}
+              variant="outlined"
+              onClick={() => router.push('/auth/register')}
+            >
+              Registrarse
+            </Button>
           </div>
         </Box>
       </Box>
@@ -143,6 +149,6 @@ const Page = () => {
   );
 };
 
-Page.getLayout = page => <AuthLayout>{page}</AuthLayout>;
+Page.getLayout = page => <>{page}</>;
 
 export default Page;

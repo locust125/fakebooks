@@ -7,7 +7,6 @@ import {
 } from 'react';
 import PropTypes from 'prop-types';
 import authService, { STORAGE_USERINFO } from 'src/services/auth-service';
-import { sha256 } from 'js-sha256';
 
 export const SESSION_AUTHENTICATED = 'authenticated';
 const HANDLERS = {
@@ -28,8 +27,7 @@ const handlers = {
 
     return {
       ...state,
-      ...// if payload (user) is provided, then is authenticated
-      (user
+      ...(user
         ? {
             isAuthenticated: true,
             isLoading: false,
@@ -104,28 +102,25 @@ export const AuthProvider = props => {
     }
   };
 
-  useEffect(
-    () => {
-      initialize();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  useEffect(() => {
+    initialize();
+  }, []);
 
   const signIn = async (email, password) => {
-    const login = await authService.login(email, sha256(password));
-
     try {
-      window.sessionStorage.setItem(SESSION_AUTHENTICATED, 'true');
+      const response = await authService.login(email, password); // No encriptar la contraseña
+
+      if (response) {
+        window.sessionStorage.setItem(SESSION_AUTHENTICATED, 'true');
+        const user = authService.getUserInfo();
+        dispatch({
+          type: HANDLERS.SIGN_IN,
+          payload: user,
+        });
+      }
     } catch (err) {
       console.error(err);
     }
-
-    const user = {};
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user,
-    });
   };
 
   const signOut = () => {

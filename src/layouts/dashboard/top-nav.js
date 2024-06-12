@@ -54,23 +54,19 @@ function stringAvatar(name) {
   };
 }
 
-export const TopNav = props => {
+export const TopNav = (props) => {
   const { onNavOpen } = props;
   const [username, setUsername] = useState('');
   const [accountname, setAccountname] = useState('');
-  const lgUp = useMediaQuery(theme => theme.breakpoints.up('lg'));
+  const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const accountPopover = usePopover();
 
   useEffect(() => {
-    const {
-      user: {
-        username,
-        account: { name: accountname },
-      },
-    } = JSON.parse(localStorage.getItem('userinfo'));
-
-    setUsername(username);
-    setAccountname(accountname);
+    const userinfo = JSON.parse(localStorage.getItem('userinfo'));
+    if (userinfo) {
+      setUsername(userinfo.name);
+      setAccountname(userinfo.email);
+    }
   }, []);
 
   return (
@@ -79,7 +75,7 @@ export const TopNav = props => {
         component="header"
         sx={{
           backdropFilter: 'blur(6px)',
-          backgroundColor: theme =>
+          backgroundColor: (theme) =>
             alpha(theme.palette.background.default, 0.8),
           position: 'sticky',
           left: {
@@ -89,7 +85,7 @@ export const TopNav = props => {
           width: {
             lg: `calc(100% - ${SIDE_NAV_WIDTH}px)`,
           },
-          zIndex: theme => theme.zIndex.appBar,
+          zIndex: (theme) => theme.zIndex.appBar,
         }}
       >
         <Stack

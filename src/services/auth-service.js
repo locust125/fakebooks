@@ -1,23 +1,29 @@
 import axios from 'axios';
 import { SESSION_AUTHENTICATED } from 'src/contexts/auth-context';
-const USER_API_BASE_URL = 'https://fractal-api-qgxrdisfsq-uc.a.run.app/api/';
+const USER_API_BASE_URL = 'http://localhost:3000/';
 
 export const STORAGE_USERINFO = 'userinfo';
 
 class AuthService {
-  login(u, p, pr) {
+  login(email, password, pr) {
     return new Promise((resolve, reject) => {
       return axios
-        .post(USER_API_BASE_URL + 'auth/login', {
-          email: u,
-          password: p,
+        .post(USER_API_BASE_URL + 'signInUser', {
+          email: email,
+          password: password,
         })
-        .then(function (r) {
-          localStorage.setItem(STORAGE_USERINFO, JSON.stringify(r.data));
+        .then(function (response) {
+          const userData = {
+            id: response.data.id,
+            name: response.data.name,
+            email: response.data.email,
+            token: response.data.token,
+          };
+          localStorage.setItem(STORAGE_USERINFO, JSON.stringify(userData));
           resolve(true, pr);
         })
-        .catch(function (e) {
-          reject();
+        .catch(function (error) {
+          reject(error);
         });
     });
   }
@@ -34,8 +40,8 @@ class AuthService {
       return { Authorization: 'Bearer ' };
     } else {
       return {
-        Authorization: 'Bearer ' + user?.access_token,
-        contentType: 'application/json',
+        Authorization: 'Bearer ' + user.token,
+        'Content-Type': 'application/json',
       };
     }
   }
@@ -48,18 +54,18 @@ class AuthService {
     }
   }
 
-  async getData(d) {
+  async getData(endpoint) {
     return axios
-      .get(USER_API_BASE_URL + d, {
+      .get(USER_API_BASE_URL + endpoint, {
         headers: this.getAuthHeader(),
       })
-      .then(function (r) {
-        return r.data;
+      .then(function (response) {
+        return response.data;
       })
-      .catch(function (e) {
+      .catch(function (error) {
         if (
-          e.response !== undefined &&
-          (e.response.status === 401 || e.response.status === 400) &&
+          error.response !== undefined &&
+          (error.response.status === 401 || error.response.status === 400) &&
           typeof window !== 'undefined'
         ) {
           localStorage.removeItem(STORAGE_USERINFO);
@@ -68,17 +74,17 @@ class AuthService {
       });
   }
 
-  async putData(d, p) {
+  async putData(endpoint, payload) {
     try {
-      const r = await axios({
-        url: USER_API_BASE_URL + d,
+      const response = await axios({
+        url: USER_API_BASE_URL + endpoint,
         method: 'put',
-        data: p,
+        data: payload,
         headers: this.getAuthHeader(),
       });
-      return r.data;
-    } catch (e) {
-      if (e.response.status === 401 || e.response.status === 400) {
+      return response.data;
+    } catch (error) {
+      if (error.response.status === 401 || error.response.status === 400) {
         localStorage.removeItem(STORAGE_USERINFO);
         window.sessionStorage.removeItem(SESSION_AUTHENTICATED);
       }
@@ -86,39 +92,39 @@ class AuthService {
     }
   }
 
-  postData(d, p, s) {
+  postData(endpoint, payload, callback) {
     return axios({
-      url: USER_API_BASE_URL + d,
+      url: USER_API_BASE_URL + endpoint,
       method: 'post',
-      data: p,
+      data: payload,
       headers: this.getAuthHeader(),
     })
-      .then(function (r) {
-        return r.data;
+      .then(function (response) {
+        return response.data;
       })
-      .catch(function (e) {
+      .catch(function (error) {
         if (
-          (e.response.status === 401 || e.response.status === 400) &&
+          (error.response.status === 401 || error.response.status === 400) &&
           typeof window !== 'undefined'
         ) {
           localStorage.removeItem(STORAGE_USERINFO);
         }
-        throw new Error(e);
+        throw new Error(error);
       });
   }
 
-  UploadImage(d) {
+  UploadImage(data) {
     return axios({
       url: 'http://tohsoft.mx/api/wsupload/request.php?action=upload',
       method: 'post',
-      data: d,
+      data: data,
       contentType: false,
       processData: false,
     })
-      .then(function (r) {
-        return r.data.data.mediaLink;
+      .then(function (response) {
+        return response.data.data.mediaLink;
       })
-      .catch(function (e) {
+      .catch(function (error) {
         return false;
       });
   }
