@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import { withAuthGuard } from "src/hocs/with-auth-guard";
-import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
 import { CatalogsProvider } from "src/contexts/catalogs-context";
 
@@ -47,9 +46,7 @@ export const Layout = withAuthGuard((props) => {
     <>
       <CatalogsProvider>
         <TopNav onNavOpen={() => setOpenNav(true)} />
-        <SideNav
-          onClose={() => setOpenNav(false)}
-          open={openNav} />
+
         <LayoutRoot>
           <LayoutContainer>{children}</LayoutContainer>
         </LayoutRoot>
