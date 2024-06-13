@@ -32,11 +32,14 @@ export default function SynchronizationDialog(props) {
   };
 
   const handleConfirm = async () => {
-    const userData = JSON.parse(localStorage.userinfo); 
+    const userData = JSON.parse(localStorage.userinfo);
     const idUser = userData?.id;
 
     if (!idUser) {
-      setSyncResult({ success: false, error: new Error('Usuario no autenticado') });
+      setSyncResult({
+        success: false,
+        error: new Error('Usuario no autenticado'),
+      });
       return;
     }
 
@@ -66,13 +69,8 @@ export default function SynchronizationDialog(props) {
 
   return (
     <React.Fragment>
-      <Button
-        color="inherit"
-        onClick={handleClickOpen}
-      >
-        <IconButton aria-label="share">
-          <InsertCommentIcon />
-        </IconButton>
+      <Button onClick={handleClickOpen} size="small">
+        Note
       </Button>
 
       <Dialog
@@ -97,10 +95,12 @@ export default function SynchronizationDialog(props) {
             fullWidth
             variant="standard"
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={e => setComment(e.target.value)}
           />
           {syncResult && syncResult.success && (
-            <div style={{ color: 'green' }}>Comentario agregado exitosamente</div>
+            <div style={{ color: 'green' }}>
+              Comentario agregado exitosamente
+            </div>
           )}
           {syncResult && !syncResult.success && (
             <div style={{ color: 'red' }}>

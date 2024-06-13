@@ -32,16 +32,19 @@ export default function PostForm() {
     setOpen(false);
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     setImage(e.target.files[0]);
   };
 
   const handleConfirm = async () => {
-    const userData = JSON.parse(localStorage.userinfo); 
+    const userData = JSON.parse(localStorage.userinfo);
     const idUser = userData?.id;
 
     if (!idUser) {
-      setSyncResult({ success: false, error: new Error('Usuario no autenticado') });
+      setSyncResult({
+        success: false,
+        error: new Error('Usuario no autenticado'),
+      });
       return;
     }
 
@@ -72,21 +75,42 @@ export default function PostForm() {
 
   return (
     <React.Fragment>
-      <Button
-        color="inherit"
-        onClick={handleClickOpen}
-        startIcon={<InsertCommentIcon />}
-        variant="outlined"
-        sx={{ borderRadius: '20px', borderColor: '#556cd6', color: '#556cd6', fontWeight: 'bold' }}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
       >
-        Comparte tus momentos
-      </Button>
+        <Button
+          color="primary"
+          onClick={handleClickOpen}
+          startIcon={<InsertCommentIcon />}
+          variant="contained"
+          sx={{ 
+            borderRadius: '8px', 
+            backgroundColor: '#1976d2', 
+            color: 'white', 
+            padding: '6px 12px', 
+            fontWeight: 'bold',
+            fontSize: '0.875rem',
+            minWidth: '150px',
+            '&:hover': { 
+              backgroundColor: '#115293' 
+            } 
+          }}
+        >
+          ¿Qué piensas?
+        </Button>
+      </Box>
 
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+        fullWidth
       >
         <DialogTitle id="alert-dialog-title">
           {`Agregar nuevo post.`}
@@ -102,9 +126,10 @@ export default function PostForm() {
             label="Título"
             type="text"
             fullWidth
-            variant="standard"
+            variant="outlined"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
+            sx={{ marginBottom: '16px' }}
           />
           <TextField
             margin="dense"
@@ -112,26 +137,31 @@ export default function PostForm() {
             label="Contenido"
             type="text"
             fullWidth
-            variant="standard"
+            variant="outlined"
+            multiline
+            rows={4}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
+            sx={{ marginBottom: '16px' }}
           />
           <Box mt={2}>
             <Button
               variant="contained"
               component="label"
-              sx={{ backgroundColor: '#556cd6', color: 'white', '&:hover': { backgroundColor: '#3f51b5' } }}
+              sx={{
+                backgroundColor: '#1976d2',
+                color: 'white',
+                '&:hover': { backgroundColor: '#115293' },
+              }}
             >
               Subir Imagen
-              <input
-                type="file"
-                hidden
-                onChange={handleImageChange}
-              />
+              <input type="file" hidden onChange={handleImageChange} />
             </Button>
           </Box>
           {syncResult && syncResult.success && (
-            <Typography sx={{ mt: 2, color: 'green' }}>Post agregado exitosamente</Typography>
+            <Typography sx={{ mt: 2, color: 'green' }}>
+              Post agregado exitosamente
+            </Typography>
           )}
           {syncResult && !syncResult.success && (
             <Typography sx={{ mt: 2, color: 'red' }}>
@@ -148,7 +178,11 @@ export default function PostForm() {
             variant="contained"
             autoFocus
             disabled={(syncResult && syncResult.success) || confirmClicked}
-            sx={{ backgroundColor: '#556cd6', color: 'white', '&:hover': { backgroundColor: '#3f51b5' } }}
+            sx={{
+              backgroundColor: '#1976d2',
+              color: 'white',
+              '&:hover': { backgroundColor: '#115293' },
+            }}
           >
             Confirmar
           </Button>

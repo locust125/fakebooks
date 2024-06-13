@@ -5,14 +5,14 @@ import {
   CardMedia,
   CardContent,
   CardActions,
-  IconButton,
+  Button,
   Typography,
   Avatar,
+  Collapse,
+  IconButton,
 } from '@mui/material';
-import { red } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Collapse from '@mui/material/Collapse';
+import { red } from '@mui/material/colors';
 import authService from 'src/services/auth-service';
 import SynchronizationDialog from './synchronizationDialog';
 
@@ -39,10 +39,13 @@ const RecipeReviewCard = () => {
       }
     };
 
-    const fetchComments = async (postId) => {
+    const fetchComments = async postId => {
       try {
         const commentData = await authService.getData(`get/comments/${postId}`);
-        setComments(prevComments => ({ ...prevComments, [postId]: commentData }));
+        setComments(prevComments => ({
+          ...prevComments,
+          [postId]: commentData,
+        }));
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
@@ -51,65 +54,91 @@ const RecipeReviewCard = () => {
     fetchPostsData();
   }, []);
 
-  const handleExpandClick = (postId) => {
-    setExpanded(prevExpanded => ({ ...prevExpanded, [postId]: !prevExpanded[postId] }));
+  const handleExpandClick = postId => {
+    setExpanded(prevExpanded => ({
+      ...prevExpanded,
+      [postId]: !prevExpanded[postId],
+    }));
   };
 
   if (!postsData.length) {
     return <div>Cargando...</div>;
   }
 
+  const getInitials = name => {
+    return name
+      ? name
+          .split(' ')
+          .map(n => n[0])
+          .join('')
+      : 'R';
+  };
+
   return (
-    <div style={{
-      display: 'grid',
-      gap: '1rem',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '1rem',
-    }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: '1rem',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '1rem',
+      }}
+    >
       {postsData.map(postData => (
-        <Card sx={{ maxWidth: '100%', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} key={postData._id}>
-          <CardHeader
-            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">R</Avatar>}
-            action={
-              <IconButton aria-label="settings">
-                <MoreVertIcon />
-              </IconButton>
-            }
-            title={postData.title}
-            subheader={new Date(postData.createdAt).toLocaleDateString()}
-          />
+        <Card sx={{ maxWidth: 345 }} key={postData._id}>
           <CardMedia
             component="img"
-            height="194"
-            image={postData.imagePost.secureUrl}
             alt={postData.title}
+            height="140"
+            image={postData.imagePost.secureUrl}
           />
-          <CardContent style={{ flexGrow: 1 }}>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {postData.title}
+            </Typography>
             <Typography variant="body2" color="text.secondary">
               {postData.content}
             </Typography>
           </CardContent>
-          <CardActions disableSpacing>
+          <CardActions>
             <SynchronizationDialog post={postData._id} />
-            <IconButton
+            <Button
               onClick={() => handleExpandClick(postData._id)}
               aria-expanded={expanded[postData._id]}
               aria-label="show more"
+              size="small"
             >
-              <ExpandMoreIcon />
-            </IconButton>
+              Learn More
+            </Button>
           </CardActions>
           <Collapse in={expanded[postData._id]} timeout="auto" unmountOnExit>
             <CardContent>
-              <Typography paragraph>Comentarios:</Typography>
-              {(comments[postData._id] || []).map((comment) => (
-                <Typography key={comment._id} paragraph>
-                  <strong>{comment.idUser.name}:</strong> {comment.comment} <br />
-                  <small>{new Date(comment.createdAt).toLocaleString()}</small>
-                </Typography>
-              ))}
+              <Typography variant="h6" gutterBottom>
+                Comentarios:
+              </Typography>
+              <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '0 16px' }}>
+                {(comments[postData._id] || []).map(comment => (
+                  <div
+                    key={comment._id}
+                    style={{
+                      marginBottom: '16px',
+                      borderBottom: '1px solid #e0e0e0',
+                      paddingBottom: '8px',
+                    }}
+                  >
+                    <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                      {comment.idUser.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" style={{ margin: '8px 0' }}>
+                      {comment.comment}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Collapse>
         </Card>
