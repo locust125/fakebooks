@@ -17,22 +17,22 @@ import authService from 'src/services/auth-service';
 import SynchronizationDialog from './synchronizationDialog';
 
 const RecipeReviewCard = () => {
-  const [postData, setPostData] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [expanded, setExpanded] = useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  const [postsData, setPostsData] = useState([]);
+  const [expanded, setExpanded] = useState({});
+  const [comments, setComments] = useState({});
 
   useEffect(() => {
-    const fetchPostData = async () => {
+    const fetchPostsData = async () => {
       try {
         const data = await authService.getData('getAll/post');
-        if (data && data.docs && data.docs.length > 0) {
-          const post = data.docs[0];
-          setPostData(post);
-          fetchComments(post._id);
+        if (data && data.docs) {
+          setPostsData(data.docs);
+          const initialExpandedState = {};
+          data.docs.forEach(post => {
+            initialExpandedState[post._id] = false;
+            fetchComments(post._id);
+          });
+          setExpanded(initialExpandedState);
         }
       } catch (error) {
         console.error('Error fetching post data:', error);
@@ -42,66 +42,79 @@ const RecipeReviewCard = () => {
     const fetchComments = async (postId) => {
       try {
         const commentData = await authService.getData(`get/comments/${postId}`);
-        setComments(commentData);
+        setComments(prevComments => ({ ...prevComments, [postId]: commentData }));
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
     };
 
-    fetchPostData();
+    fetchPostsData();
   }, []);
 
-  if (!postData) {
+  const handleExpandClick = (postId) => {
+    setExpanded(prevExpanded => ({ ...prevExpanded, [postId]: !prevExpanded[postId] }));
+  };
+
+  if (!postsData.length) {
     return <div>Cargando...</div>;
   }
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <CardHeader
-        avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">R</Avatar>}
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={postData.title}
-        subheader={new Date(postData.createdAt).toLocaleDateString()}
-      />
-      <CardMedia
-        component="img"
-        height="194"
-        image={postData.imagePost.secureUrl} // Ajusta esta parte según la estructura de tu dato
-        alt="Paella dish"
-      />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          {postData.content}
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-          <SynchronizationDialog
-          post={postData._id}
+    <div style={{
+      display: 'grid',
+      gap: '1rem',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '1rem',
+    }}>
+      {postsData.map(postData => (
+        <Card sx={{ maxWidth: '100%', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} key={postData._id}>
+          <CardHeader
+            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">R</Avatar>}
+            action={
+              <IconButton aria-label="settings">
+                <MoreVertIcon />
+              </IconButton>
+            }
+            title={postData.title}
+            subheader={new Date(postData.createdAt).toLocaleDateString()}
           />
-        <IconButton
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>Comentarios:</Typography>
-          {comments.map((comment) => (
-            <Typography key={comment._id} paragraph>
-              <strong>{comment.idUser.name}:</strong> {comment.comment} <br />
-              <small>{new Date(comment.createdAt).toLocaleString()}</small>
+          <CardMedia
+            component="img"
+            height="194"
+            image={postData.imagePost.secureUrl}
+            alt={postData.title}
+          />
+          <CardContent style={{ flexGrow: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              {postData.content}
             </Typography>
-          ))}
-        </CardContent>
-      </Collapse>
-    </Card>
+          </CardContent>
+          <CardActions disableSpacing>
+            <SynchronizationDialog post={postData._id} />
+            <IconButton
+              onClick={() => handleExpandClick(postData._id)}
+              aria-expanded={expanded[postData._id]}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          </CardActions>
+          <Collapse in={expanded[postData._id]} timeout="auto" unmountOnExit>
+            <CardContent>
+              <Typography paragraph>Comentarios:</Typography>
+              {(comments[postData._id] || []).map((comment) => (
+                <Typography key={comment._id} paragraph>
+                  <strong>{comment.idUser.name}:</strong> {comment.comment} <br />
+                  <small>{new Date(comment.createdAt).toLocaleString()}</small>
+                </Typography>
+              ))}
+            </CardContent>
+          </Collapse>
+        </Card>
+      ))}
+    </div>
   );
 };
 
