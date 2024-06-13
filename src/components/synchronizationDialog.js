@@ -9,7 +9,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import * as PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import authService from 'src/services/auth-service';
 
@@ -19,7 +19,7 @@ export default function SynchronizationDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [syncResult, setSyncResult] = React.useState(null);
   const [confirmClicked, setConfirmClicked] = React.useState(false);
-  const [comment, setComment] = React.useState(''); // Nuevo estado para el comentario
+  const [comment, setComment] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -32,8 +32,8 @@ export default function SynchronizationDialog(props) {
   };
 
   const handleConfirm = async () => {
-    const userData = JSON.parse(localStorage.userinfo); // Obtener los datos del usuario del localStorage
-    const idUser = userData?.id; // Extraer el id del usuario
+    const userData = JSON.parse(localStorage.userinfo); 
+    const idUser = userData?.id;
 
     if (!idUser) {
       setSyncResult({ success: false, error: new Error('Usuario no autenticado') });
@@ -50,6 +50,11 @@ export default function SynchronizationDialog(props) {
       const response = await authService.postData('post/comment', commentData);
       console.log('Comentario agregado exitosamente', response);
       setSyncResult({ success: true });
+
+      // Recargar la página después de 1 segundo
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); // 1000 milisegundos = 1 segundo
     } catch (error) {
       console.error('Error al agregar comentario', error);
       setSyncResult({ success: false, error });

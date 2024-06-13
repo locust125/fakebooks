@@ -17,10 +17,7 @@ const LayoutRoot = styled("div")(({ theme }) => ({
 }));
 
 const LayoutContainer = styled("div")({
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "column",
-  width: "100%",
+
 });
 
 export const Layout = withAuthGuard((props) => {
