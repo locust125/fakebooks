@@ -11,7 +11,7 @@ import {
   Stack,
   SvgIcon,
 } from '@mui/material';
-import ChevronLeftIcon from '@heroicons/react/24/solid/ChevronLeftIcon';
+import ChatBubbleBottomCenterIcon from '@heroicons/react/24/solid/ChatBubbleBottomCenterIcon';
 import ChevronRightIcon from '@heroicons/react/24/solid/ChevronRightIcon';
 import { FormatImageUrl } from 'src/utils/format-image-url';
 

@@ -1,45 +1,62 @@
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
+import {
+  Button,
+  IconButton,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
 import * as PropTypes from 'prop-types';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import CloudArrowUpIcon from '@heroicons/react/24/solid/CloudArrowUpIcon';
-import { Button, SvgIcon } from '@mui/material';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import authService from 'src/services/auth-service';
 
 export default function SynchronizationDialog(props) {
-  const { name, endpoint } = props;
+  const { post } = props;
 
   const [open, setOpen] = React.useState(false);
   const [syncResult, setSyncResult] = React.useState(null);
-  const [confirmClicked, setConfirmClicked] = React.useState(false); // Nuevo estado para el botón de confirmar
+  const [confirmClicked, setConfirmClicked] = React.useState(false);
+  const [comment, setComment] = React.useState(''); // Nuevo estado para el comentario
 
   const handleClickOpen = () => {
     setOpen(true);
     setSyncResult(null);
+    setConfirmClicked(false);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleConfirm = () => {
-    authService
-      .postData(`${endpoint}/fbsync`)
-      .then(response => {
-        console.log('Sincronización exitosa', response);
-        setSyncResult({ success: true });
-      })
-      .catch(error => {
-        console.error('Error en la sincronización', error);
-        setSyncResult({ success: false, error });
-      })
-      .finally(() => {
-        setOpen(true);
-        setConfirmClicked(true); // Establecer confirmClicked en true después de confirmar
-      });
+  const handleConfirm = async () => {
+    const userData = JSON.parse(localStorage.userinfo); // Obtener los datos del usuario del localStorage
+    const idUser = userData?.id; // Extraer el id del usuario
+
+    if (!idUser) {
+      setSyncResult({ success: false, error: new Error('Usuario no autenticado') });
+      return;
+    }
+
+    const commentData = {
+      idUser,
+      comment,
+      postId: post,
+    };
+
+    try {
+      const response = await authService.postData('post/comment', commentData);
+      console.log('Comentario agregado exitosamente', response);
+      setSyncResult({ success: true });
+    } catch (error) {
+      console.error('Error al agregar comentario', error);
+      setSyncResult({ success: false, error });
+    } finally {
+      setOpen(true);
+      setConfirmClicked(true);
+    }
   };
 
   return (
@@ -47,14 +64,12 @@ export default function SynchronizationDialog(props) {
       <Button
         color="inherit"
         onClick={handleClickOpen}
-        startIcon={
-          <SvgIcon fontSize="small">
-            <CloudArrowUpIcon />
-          </SvgIcon>
-        }
       >
-        Sincronizar
+        <IconButton aria-label="share">
+          <InsertCommentIcon />
+        </IconButton>
       </Button>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -62,19 +77,29 @@ export default function SynchronizationDialog(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {`Sincronización de ${name}`}
+          {`Agregar comentario.`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Al sincronizar {name}, estos estarán disponibles en la aplicación
-            móvil.
+            Al agregar un comentario.
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="comment"
+            label="Comentario"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
           {syncResult && syncResult.success && (
-            <div style={{ color: 'green' }}>Sincronización exitosa</div>
+            <div style={{ color: 'green' }}>Comentario agregado exitosamente</div>
           )}
           {syncResult && !syncResult.success && (
             <div style={{ color: 'red' }}>
-              Error en la sincronización: {syncResult.error.message}
+              Error al agregar comentario: {syncResult.error.message}
             </div>
           )}
         </DialogContent>
@@ -94,6 +119,5 @@ export default function SynchronizationDialog(props) {
 }
 
 SynchronizationDialog.propTypes = {
-  name: PropTypes.string.isRequired,
-  endpoint: PropTypes.string.isRequired,
+  post: PropTypes.string.isRequired,
 };
