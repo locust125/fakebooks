@@ -100,7 +100,7 @@ export default function PostForm() {
             } 
           }}
         >
-          ¿Qué piensas?
+          Comparte parte de tu dia campeon
         </Button>
       </Box>
 

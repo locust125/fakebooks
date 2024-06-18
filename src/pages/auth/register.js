@@ -3,7 +3,17 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import axios from 'axios';
 
 const Page = () => {
@@ -16,9 +26,12 @@ const Page = () => {
       submit: null,
     },
     validationSchema: Yup.object({
-      email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-      name: Yup.string().max(255).required('Name is required'),
-      password: Yup.string().max(255).required('Password is required'),
+      email: Yup.string()
+        .email('Debe ser un email válido')
+        .max(255)
+        .required('El email es requerido'),
+      name: Yup.string().max(255).required('El nombre es requerido'),
+      password: Yup.string().max(255).required('La contraseña es requerida'),
     }),
     onSubmit: async (values, helpers) => {
       try {
@@ -28,7 +41,6 @@ const Page = () => {
           password: values.password,
         });
 
-        // Aquí podrías guardar el token en el localStorage si es necesario
         localStorage.setItem('userinfo', JSON.stringify(response.data));
 
         router.push('/');
@@ -43,86 +55,117 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Register | Devias Kit</title>
+        <title>Register | Fractal Photos</title>
       </Head>
       <Box
         sx={{
-          flex: '1 1 auto',
-          alignItems: 'center',
+          backgroundImage: 'url(/fondoTree.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '100vh',
           display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
+          p: 3,
         }}
       >
-        <Box
+        <Container
+          component="main"
+          maxWidth="xs"
           sx={{
-            maxWidth: 550,
-            px: 3,
-            py: '100px',
-            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <div>
+          <Paper
+            elevation={6}
+            sx={{
+              p: 4,
+              borderRadius: 2,
+              width: '100%',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              backdropFilter: 'blur(10px)',
+              padding: '20px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)', 
+              textAlign: 'center',
+            }}
+          >
             <Stack spacing={1} sx={{ mb: 3 }}>
-              <Typography variant="h4">Register</Typography>
+              <Typography variant="h4">Registrarse</Typography>
               <Typography color="text.secondary" variant="body2">
-                Already have an account?
-                &nbsp;
-                <Link component={NextLink} href="/auth/login" underline="hover" variant="subtitle2">
-                  Log in
+                ¿Ya tienes una cuenta? &nbsp;
+                <Link
+                  component={NextLink}
+                  href="/auth/login"
+                  underline="hover"
+                  variant="subtitle2"
+                >
+                  Iniciar sesión
                 </Link>
               </Typography>
             </Stack>
             <form noValidate onSubmit={formik.handleSubmit}>
-              <Stack spacing={3}>
+              <Stack spacing={2}>
                 <TextField
                   error={!!(formik.touched.name && formik.errors.name)}
                   fullWidth
                   helperText={formik.touched.name && formik.errors.name}
-                  label="Name"
+                  label="Nombre"
                   name="name"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   value={formik.values.name}
+                  variant="outlined"
                 />
                 <TextField
                   error={!!(formik.touched.email && formik.errors.email)}
                   fullWidth
                   helperText={formik.touched.email && formik.errors.email}
-                  label="Email Address"
+                  label="Correo Electrónico"
                   name="email"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   type="email"
                   value={formik.values.email}
+                  variant="outlined"
                 />
                 <TextField
                   error={!!(formik.touched.password && formik.errors.password)}
                   fullWidth
                   helperText={formik.touched.password && formik.errors.password}
-                  label="Password"
+                  label="Contraseña"
                   name="password"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   type="password"
                   value={formik.values.password}
+                  variant="outlined"
                 />
               </Stack>
               {formik.errors.submit && (
-                <Typography color="error" sx={{ mt: 3 }} variant="body2">
+                <Alert severity="error" sx={{ mt: 2 }}>
                   {formik.errors.submit}
-                </Typography>
+                </Alert>
               )}
-              <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
-                Continue
+              <Button
+                fullWidth
+                size="large"
+                sx={{ mt: 3 }}
+                type="submit"
+                variant="contained"
+              >
+                Continuar
               </Button>
             </form>
-          </div>
-        </Box>
+          </Paper>
+        </Container>
       </Box>
     </>
   );
 };
 
-Page.getLayout = (page) => <>{page}</>;
+Page.getLayout = page => <>{page}</>;
 
 export default Page;

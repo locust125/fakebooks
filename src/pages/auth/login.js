@@ -13,6 +13,9 @@ import {
   Tabs,
   TextField,
   Typography,
+  Paper,
+  Divider,
+  Container,
 } from '@mui/material';
 import { useAuth } from 'src/hooks/use-auth';
 
@@ -62,32 +65,53 @@ const Page = () => {
       </Head>
       <Box
         sx={{
-          backgroundColor: 'background.paper',
-          flex: '1 1 auto',
-          alignItems: 'center',
+          backgroundImage: 'url(/fondoTree.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '100vh',
           display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
+          p: 3,
         }}
       >
-        <Box
+        <Container
+          component="main"
+          maxWidth="xs"
           sx={{
-            maxWidth: 550,
-            px: 3,
-            py: '100px',
-            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
           }}
         >
-          <div>
+          <Paper
+            elevation={6}
+            sx={{
+              p: 4,
+              borderRadius: 2,
+              width: '100%',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              backdropFilter: 'blur(10px)',
+              padding: '20px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)', 
+              textAlign: 'center',
+            }}
+          >
+            {' '}
             <Stack spacing={1} sx={{ mb: 3 }}>
               <Typography variant="h4">Acceso</Typography>
-              <Typography color="text.secondary" variant="body2"></Typography>
+              <Typography color="text.secondary" variant="body2">
+                Ingrese sus datos para acceder a su cuenta
+              </Typography>
             </Stack>
             <Tabs onChange={handleMethodChange} sx={{ mb: 3 }} value={method}>
               <Tab label="Email" value="email" />
             </Tabs>
             {method === 'email' && (
               <form noValidate onSubmit={formik.handleSubmit}>
-                <Stack spacing={3}>
+                <Stack spacing={2}>
                   <TextField
                     error={!!(formik.touched.email && formik.errors.email)}
                     fullWidth
@@ -98,6 +122,7 @@ const Page = () => {
                     onChange={formik.handleChange}
                     type="email"
                     value={formik.values.email}
+                    variant="outlined"
                   />
                   <TextField
                     error={
@@ -113,37 +138,36 @@ const Page = () => {
                     onChange={formik.handleChange}
                     type="password"
                     value={formik.values.password}
+                    variant="outlined"
                   />
+                  {formik.errors.submit && (
+                    <Alert severity="error">{formik.errors.submit}</Alert>
+                  )}
+                  <Button
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 1 }}
+                    type="submit"
+                    variant="contained"
+                    disabled={isSubmitting}
+                    startIcon={isSubmitting && <CircularProgress size={24} />}
+                  >
+                    {isSubmitting ? 'Cargando...' : 'Entrar'}
+                  </Button>
                 </Stack>
-                {formik.errors.submit && (
-                  <Typography color="error" sx={{ mt: 3 }} variant="body2">
-                    {formik.errors.submit}
-                  </Typography>
-                )}
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  type="submit"
-                  variant="contained"
-                  disabled={isSubmitting}
-                  startIcon={isSubmitting && <CircularProgress size={24} />}
-                >
-                  {isSubmitting ? 'Cargando...' : 'Entrar'}
-                </Button>
               </form>
             )}
+            <Divider sx={{ my: 3 }} />
             <Button
               fullWidth
               size="large"
-              sx={{ mt: 3 }}
               variant="outlined"
               onClick={() => router.push('/auth/register')}
             >
               Registrarse
             </Button>
-          </div>
-        </Box>
+          </Paper>
+        </Container>
       </Box>
     </>
   );
