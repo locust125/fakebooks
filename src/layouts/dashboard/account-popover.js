@@ -40,10 +40,12 @@ export const AccountPopover = props => {
         }}
       >
         <Typography variant="overline">Cuenta</Typography>
+
         <Typography
           color="text.secondary"
           variant="body2"
           sx={{ textTransform: 'capitalize' }}
+          onClick={() => router.push('/user')}
         >
           {accountname ?? ''}
         </Typography>
