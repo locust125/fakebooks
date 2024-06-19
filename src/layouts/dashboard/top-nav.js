@@ -74,18 +74,9 @@ export const TopNav = (props) => {
       <Box
         component="header"
         sx={{
-          backdropFilter: 'blur(6px)',
-          backgroundColor: (theme) =>
-            alpha(theme.palette.background.default, 0.8),
-          position: 'sticky',
-          left: {
-            lg: `${SIDE_NAV_WIDTH}px`,
-          },
-          top: 0,
-          width: {
-            lg: `calc(100% - ${SIDE_NAV_WIDTH}px)`,
-          },
-          zIndex: (theme) => theme.zIndex.appBar,
+          backgroundColor: 'black', // Fondo azul más bajo
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Sombra sutil
+          zIndex: 1100, // Asegura que esté por encima de otros elementos
         }}
       >
         <Stack
@@ -130,3 +121,5 @@ export const TopNav = (props) => {
 TopNav.propTypes = {
   onNavOpen: PropTypes.func,
 };
+
+export default TopNav;

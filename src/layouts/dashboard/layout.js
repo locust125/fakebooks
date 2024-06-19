@@ -7,11 +7,15 @@ import { CatalogsProvider } from 'src/contexts/catalogs-context';
 
 const SIDE_NAV_WIDTH = 280;
 
-const LayoutRoot = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flex: '1 1 auto',
-  maxWidth: '100%',
-  [theme.breakpoints.up('lg')]: {
+const LayoutRoot = styled("div")(({ theme }) => ({
+  display: "flex",
+  flex: "1 1 auto",
+  maxWidth: "100%",
+  backgroundImage: 'url("/FondoRelax.avif")', // Fondo de imagen deseado
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  [theme.breakpoints.up("lg")]: {
+
     paddingLeft: SIDE_NAV_WIDTH,
   },
 }));

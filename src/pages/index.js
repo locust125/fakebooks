@@ -10,10 +10,12 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Fakebook</title>
+        <title>Twiter2</title>
       </Head>
-      <Postx2></Postx2>
-      <DashboardLayout><RecipeReviewCard/>
+      
+      <DashboardLayout>
+        <Postx2/>
+        <RecipeReviewCard/>
       </DashboardLayout>
     </>
   );
